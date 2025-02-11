@@ -4,10 +4,13 @@ import userRoutes from "./routes/userRoutes";
 import scanRoutes from "./routes/scanRoutes";
 import activityRoutes from "./routes/activityRoutes";
 import friendRoutes from "./routes/friendRoutes";
+import { setupSwagger } from "./swagger";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+setupSwagger(app);
 
 app.use("/users", userRoutes);
 app.use("/scan", scanRoutes);
