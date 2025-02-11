@@ -6,7 +6,12 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "start": "npx ts-node src/server.ts",
+  "dev": "npx ts-node src/server.ts",
+  "build": "tsc",
+  "migrate": "npx prisma migrate deploy",
+  "seed": "npx prisma db seed",
+  "postinstall": "npx prisma generate && npm run migrate && npm run seed"
   },
   "keywords": [],
   "author": "",
