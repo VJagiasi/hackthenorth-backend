@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int          @id @default(autoincrement())
+  name           String
+  email          String       @unique
+  phone          String
+  badge_code     String?      @unique
+  updated_at     DateTime     @updatedAt
+  checked_in     Boolean      @default(false)
+  receivedScans  FriendScan[] @relation("ScannedRelation")
+  scannedFriends FriendScan[] @relation("ScannerRelation")
+  scans          Scan[]
+}
+
+model Activity {
+  id            Int     @id @default(autoincrement())
+  name          String  @unique
+  category      String
+  one_scan_only Boolean @default(false)
+  scans         Scan[]
+}
+
+model Scan {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  activityId Int
+  scanned_at DateTime @default(now())
+  activity   Activity @relation(fields: [activityId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model FriendScan {
+  id         Int      @id @default(autoincrement())
+  scannerId  Int
+  scannedId  Int
+  scanned_at DateTime @default(now())
+  scanned    User     @relation("ScannedRelation", fields: [scannedId], references: [id])
+  scanner    User     @relation("ScannerRelation", fields: [scannerId], references: [id])
+
+  @@unique([scannerId, scannedId])
+}
