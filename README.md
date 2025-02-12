@@ -303,15 +303,15 @@ I wanted it to feel **natural to use**, **resilient to edge cases**, and **scala
 
 ### **Some of the Best Things About This API:**
 
-✅ **Realistic Rules** → Users must be checked in before scanning.
+**Realistic Rules** → Users must be checked in before scanning.
 
-✅ **Preventing Exploits** → Scan cooldowns & one-scan-only enforcement.
+**Preventing Exploits** → Scan cooldowns & one-scan-only enforcement.
 
-✅ **Data Integrity** → Unique constraints on emails, badge codes, and friendships.
+**Data Integrity** → Unique constraints on emails, badge codes, and friendships.
 
-✅ **Fast Query Performance** → Using Prisma's filtering & grouping features.
+**Fast Query Performance** → Using Prisma's filtering & grouping features.
 
-✅ **Good Developer Experience** → Thoughtful API design + Swagger documentation.
+**Good Developer Experience** → Thoughtful API design + Swagger documentation.
 
 ---
 
