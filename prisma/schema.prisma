@@ -47,3 +47,4 @@ model FriendScan {
 
   @@unique([scannerId, scannedId])
 }
+

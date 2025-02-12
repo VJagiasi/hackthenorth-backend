@@ -31,6 +31,87 @@ Welcome to the Hack the North 2025 Badge Scanning API! This backend system enabl
 └── README.md
 ```
 
+
+## 📚 Database Schema
+
+```prisma
+model User {
+  id             Int          @id @default(autoincrement())
+  name           String
+  email          String       @unique
+  phone          String
+  badge_code     String?      @unique  // Optional until check-in
+  updated_at     DateTime     @updatedAt
+  checked_in     Boolean      @default(false)
+  receivedScans  FriendScan[] @relation("ScannedRelation")
+  scannedFriends FriendScan[] @relation("ScannerRelation")
+  scans          Scan[]
+}
+
+model Activity {
+  id            Int     @id @default(autoincrement())
+  name          String  @unique
+  category      String
+  one_scan_only Boolean @default(false)
+  scans         Scan[]
+}
+
+model Scan {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  activityId Int
+  scanned_at DateTime @default(now())
+  activity   Activity @relation(fields: [activityId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model FriendScan {
+  id         Int      @id @default(autoincrement())
+  scannerId  Int
+  scannedId  Int
+  scanned_at DateTime @default(now())
+  scanned    User     @relation("ScannedRelation", fields: [scannedId], references: [id])
+  scanner    User     @relation("ScannerRelation", fields: [scannerId], references: [id])
+
+  @@unique([scannerId, scannedId])  // Prevents duplicate scans
+}
+```
+
+### Key Design Decisions
+
+#### User Model
+- `badge_code` is nullable (`String?`) because users don't have badges until check-in
+- Two friend scan relations (`receivedScans` and `scannedFriends`) to track both directions of friendship
+- `updated_at` automatically updates on any change, useful for tracking check-in/out times
+
+#### Activity Model
+- `name` is unique to prevent duplicate activities
+- `one_scan_only` flag enables special rules for certain activities
+- `category` helps organize activities (e.g., "Workshop", "Food", "Social")
+
+#### Scan Model
+- Links users to activities with timestamps
+- Many-to-many relationship allowing users to scan multiple activities
+- `scanned_at` defaults to current time for accurate tracking
+
+#### FriendScan Model
+- Represents bidirectional friendships
+- Uses two separate relations to the User model:
+  - `scanner`: The person who initiated the scan
+  - `scanned`: The person whose badge was scanned
+- `@@unique([scannerId, scannedId])` prevents duplicate friend connections
+- Includes timestamp to track when friendships were formed
+
+### Relationship Flow
+```
+User ─┬─── Scans ───── Activity
+      └─── FriendScan ─ User
+```
+- Users can scan many activities
+- Users can scan many friends
+- Activities track all user scans
+- Friend connections are one-time and bidirectional
+
 ## 🛠️ Setup & Installation
 
 ### Option 1: Use the Hosted API
@@ -321,3 +402,4 @@ I wanted it to feel **natural to use**, **resilient to edge cases**, and **scala
 - **Add rate limiting** to prevent abuse.
 - **Write full test coverage** (currently missing).
 - **Build a front-end dashboard** for organizers.
+
